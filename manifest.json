@@ -1,0 +1,23 @@
+{
+
+  "description": "P2P encryption in social networks now in your hands",
+  "manifest_version": 2,
+  "name": "Paranoid",
+  "version": "0.0.2",
+  "homepage_url": "https://github.com/roma-guru/paranoid",
+  "icons": {
+    "225": "icon.png"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["https://vk.com/im?*"],
+      "js": ["vk.js", "jsencrypt.js"]
+    },
+    {
+      "matches": ["https://facebook.com/messages/t/*"],
+      "js": ["fb.js"]
+    }
+  ]
+
+}

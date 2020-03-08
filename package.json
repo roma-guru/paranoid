@@ -1,0 +1,9 @@
+{
+  "name": "paranoid",
+  "version": "0.0.2",
+  "description": "P2P Encryption in social networks",
+  "main": "index.js",
+  "repository": "github.com/roma-guru/paranoid",
+  "author": "Roman Voropaev <voropaev.roma@gmail.com>",
+  "license": "MIT"
+}
