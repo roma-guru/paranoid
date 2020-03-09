@@ -1,7 +1,9 @@
-document.onload = function() {
+var jsencrypt = require('jsencrypt');
+
+window.onload = function() {
     console.info("Paranoid extension started");
-    var rsa1 = new JSEncrypt();
-    var rsa2 = new JSEncrypt();
+    var rsa1 = new jsencrypt.JSEncrypt();
+    var rsa2 = new jsencrypt.JSEncrypt();
     console.debug(rsa1, rsa2);
 
     // Keys
@@ -56,24 +58,24 @@ document.onload = function() {
     }
     inputbox.onmouseover = inputbox.onchange = function(e) {
         if (old_input_content) 
-            e.target.innerText=old_input_content
+            e.target.innerText=old_input_content;
     }
 
     // Second - decrypt messages on mouse over
-    var messages = document.querySelectorAll(".im-mess--text")
-    var old_message_content = new Map()
+    var messages = document.querySelectorAll(".im-mess--text");
+    var old_message_content = new Map();
 
     for (e of messages) {
         e.onmouseover = function(e) {
-            const elem = e.target
-            const msgid = elem.parentNode.dataset["msgid"]
-            old_message_content.set(msgid, elem.innerText)
-            elem.innerText=you.decrypt(elem.innerText)
+            const elem = e.target;
+            const msgid = elem.parentNode.dataset["msgid"];
+            old_message_content.set(msgid, elem.innerText);
+            elem.innerText=you.decrypt(elem.innerText);
         }
         e.onmouseout = function(e) {
-            const elem = e.target
-            const msgid = elem.parentNode.dataset["msgid"]
-            elem.innerText=old_message_content.get(msgid)
+            const elem = e.target;
+            const msgid = elem.parentNode.dataset["msgid"];
+            elem.innerText=old_message_content.get(msgid);
         }
     }
 }

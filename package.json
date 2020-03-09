@@ -2,8 +2,17 @@
   "name": "paranoid",
   "version": "0.0.2",
   "description": "P2P Encryption in social networks",
-  "main": "index.js",
+  "main": "bundle.js",
   "repository": "github.com/roma-guru/paranoid",
   "author": "Roman Voropaev <voropaev.roma@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "jsencrypt": "^3.0.0-rc.1"
+  },
+  "scripts": {
+    "build": "browserify vk.js -o bundle.js"
+  },
+  "devDependencies": {
+    "browserify": "^16.5.0"
+  }
 }

@@ -8,11 +8,12 @@
   "icons": {
     "225": "icon.png"
   },
+  "permissions": ["storage", "tabs"],
 
   "content_scripts": [
     {
       "matches": ["https://vk.com/im?*"],
-      "js": ["vk.js", "jsencrypt.js"]
+      "js": ["bundle.js"]
     },
     {
       "matches": ["https://facebook.com/messages/t/*"],
