@@ -1,4 +1,5 @@
 var jsencrypt = require('jsencrypt');
+var crypto = require('crypto-js');
 
 console.info("Paranoid extension started");
 
@@ -57,8 +58,14 @@ var inputbox = document.querySelector(".im-chat-input--text");
 
 inputbox.onmouseout = function(e) {
     if (e.target.innerText) {
+        console.debug(e.target.innerText);
         old_input_content = e.target.innerText;
-        e.target.innerText=me.encrypt(e.target.innerText);
+        raw_text = old_input_content;
+        console.log(raw_text.length)
+        encrypted = you.encrypt(raw_text)
+        encrypted = encrypted + ' ' + me.sign(crypto.MD5(encrypted),
+            crypto.MD5, "md5");
+        e.target.innerText=you.encrypt(encrypted);
     }
 }
 inputbox.onmouseover = inputbox.onchange = function(e) {
@@ -75,9 +82,18 @@ message_hist.onmouseover = function(e) {
     if (elem.matches(".im-mess--text")) { 
         const msgid = elem.parentNode.dataset["msgid"];
         old_message_content.set(msgid, elem.innerText);
-        decrypted = you.decrypt(elem.innerText);
-        if (decrypted)
-            elem.innerText = decrypted;
+        decrypted = me.decrypt(elem.innerText);
+        if (decrypted) {
+            var words = decrypted.split(' ');
+            var signature = atob(words[words.length-1]);
+            var raw_text = decrypted.slice(0, decrypted);
+            if (you.verify(raw_text, signature, crypto.MD5)) {
+                console.log("signature verified");
+                elem.innerText = raw_text;
+            } else {
+                console.log("signature failed");
+            }
+        }
     }
 }
 message_hist.onmouseout = function(e) {
