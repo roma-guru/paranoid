@@ -1,7 +1,7 @@
 var jsencrypt = require('jsencrypt');
 var crypto = require('crypto-js');
 
-console.info("Paranoid extension started");
+console.info("Paranoid extension now started");
 
 var rsa1 = new jsencrypt.JSEncrypt();
 var rsa2 = new jsencrypt.JSEncrypt();
