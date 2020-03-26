@@ -8,11 +8,13 @@
   "license": "MIT",
   "dependencies": {
     "crypto-js": "^4.0.0",
-    "jsencrypt": "^3.0.0-rc.1"
+    "jsencrypt": "^3.0.0-rc.1",
+    "openpgp": "^4.10.1"
   },
   "scripts": {
     "build": "browserify vk.js -o bundle.js",
-    "watch": "npm-watch"
+    "watch": "npm-watch",
+    "pgp": "node pgp"
   },
   "watch": {
     "build": "vk.js"
