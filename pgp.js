@@ -185,5 +185,10 @@ const generateKey = async (passphrase, name) => {
         console.log(e)
     }
 
-})();
+});
 
+module.exports = {
+  encryptAndSign,
+  decryptAndVerify,
+  generateKey
+}
