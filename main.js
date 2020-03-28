@@ -18,19 +18,53 @@ companion.setPublicKey(keys.get_public(his_id));
 
 // First - encrypt input messagebox on mouse leave
 var old_input_content = "";
-var inputbox = document.querySelector(".im-chat-input--text");
 
-inputbox.onmouseout = function(e) {
-  if (e.target.innerText) {
-    console.debug(e.target.innerText);
-    old_input_content = e.target.innerText;
+
+
+// inputbox.onmouseout = function(e) {
+//   if (e.target.innerText) {
+//     console.debug(e.target.innerText);
+//     old_input_content = e.target.innerText;
+//     raw_text = old_input_content;
+//     encrypted = companion.encrypt(raw_text);
+//     //encrypted = encrypted + ' ' + myself.sign(crypto.MD5(encrypted),
+//       //crypto.MD5, "md5");
+//     e.target.innerText = btoa(encrypted);
+//   }
+// }
+
+const initSendingButton = () => {
+  let  originalButton = document.querySelector(".im-send-btn.im-chat-input--send.im-send-btn_static._im_send.im-send-btn_send");
+  originalButton.setAttribute('style','display:none;');
+  let newBtn = document.createElement('BUTTON');
+  newBtn.setAttribute('class','im-send-btn im-chat-input--send im-send-btn_static _im_send im-send-btn_send');
+  newBtn.setAttribute('aria-label',"Отправить");
+  newBtn.setAttribute('data-tttype',"2");
+  originalButton.parentElement.appendChild(newBtn);
+
+  newBtn.onclick = () => {
+
+    let inputbox = document.querySelector(".im-chat-input--text");
+    console.debug(inputbox.innerText);
+    old_input_content = inputbox.innerText;
     raw_text = old_input_content;
     encrypted = companion.encrypt(raw_text);
     //encrypted = encrypted + ' ' + myself.sign(crypto.MD5(encrypted),
-      //crypto.MD5, "md5");
-    e.target.innerText = btoa(encrypted);
+    //crypto.MD5, "md5");
+
+    //TODO we need to check if the input is really changed so we can send encrypted data
+    //Sometimes inputbox doesn't have anough time to change and the original text is sent
+    inputbox.innerText = btoa(encrypted);
+    inputbox.innerText = btoa(encrypted);
+    originalButton.click()
   }
-}
+
+};
+
+initSendingButton()
+
+
+
 inputbox.onmouseover = inputbox.onchange = function(e) {
   if (old_input_content)
     e.target.innerText = old_input_content;
