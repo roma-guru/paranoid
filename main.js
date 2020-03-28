@@ -34,10 +34,11 @@ var old_input_content = "";
 // }
 
 const initSendingButton = () => {
-  let  originalButton = document.querySelector(".im-send-btn.im-chat-input--send.im-send-btn_static._im_send.im-send-btn_send");
+  const buttonClass = '.im-send-btn.im-chat-input--send'
+  let  originalButton = document.querySelector(buttonClass);
   originalButton.setAttribute('style','display:none;');
   let newBtn = document.createElement('BUTTON');
-  newBtn.setAttribute('class','im-send-btn im-chat-input--send im-send-btn_static _im_send im-send-btn_send');
+  newBtn.setAttribute('class',buttonClass);
   newBtn.setAttribute('aria-label',"Отправить");
   newBtn.setAttribute('data-tttype',"2");
   originalButton.parentElement.appendChild(newBtn);
