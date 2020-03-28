@@ -7,7 +7,6 @@
   "author": "Roman Voropaev <voropaev.roma@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "crypto-js": "^4.0.0",
     "jsencrypt": "^3.0.0-rc.1",
     "openpgp": "^4.10.1"
   },

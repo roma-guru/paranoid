@@ -1,5 +1,4 @@
 const jsencrypt = require('jsencrypt');
-const crypto = require('crypto-js');
 const keys = require('./keys.js');
 
 console.info("paranoid extension started");
@@ -26,11 +25,10 @@ inputbox.onmouseout = function(e) {
     console.debug(e.target.innerText);
     old_input_content = e.target.innerText;
     raw_text = old_input_content;
-    console.log(raw_text.length)
-    encrypted = companion.encrypt(raw_text)
-    encrypted = encrypted + ' ' + myself.sign(crypto.MD5(encrypted),
-      crypto.MD5, "md5");
-    e.target.innerText = you.encrypt(encrypted);
+    encrypted = companion.encrypt(raw_text);
+    //encrypted = encrypted + ' ' + myself.sign(crypto.MD5(encrypted),
+      //crypto.MD5, "md5");
+    e.target.innerText = btoa(encrypted);
   }
 }
 inputbox.onmouseover = inputbox.onchange = function(e) {
@@ -47,17 +45,9 @@ message_hist.onmouseover = function(e) {
   if (elem.matches(".im-mess--text")) {
     const msgid = elem.parentNode.dataset["msgid"];
     old_message_content.set(msgid, elem.innerText);
-    decrypted = myself.decrypt(elem.innerText);
+    decrypted = myself.decrypt(atob(elem.innerText));
     if (decrypted) {
-      var words = decrypted.split(' ');
-      var signature = atob(words[words.length - 1]);
-      var raw_text = decrypted.slice(0, decrypted);
-      if (companion.verify(raw_text, signature, crypto.MD5)) {
-        console.log("signature verified");
         elem.innerText = raw_text;
-      } else {
-        console.log("signature failed");
-      }
     }
   }
 }
