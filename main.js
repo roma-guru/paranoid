@@ -47,7 +47,7 @@ message_hist.onmouseover = function(e) {
     old_message_content.set(msgid, elem.innerText);
     decrypted = myself.decrypt(atob(elem.innerText));
     if (decrypted) {
-        elem.innerText = raw_text;
+        elem.innerText = decrypted;
     }
   }
 }
