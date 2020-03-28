@@ -18,7 +18,7 @@ companion.setPublicKey(keys.get_public(his_id));
 
 // First - encrypt input messagebox on mouse leave
 var old_input_content = "";
-
+// let inputbox = document.querySelector(".im-chat-input--text");
 
 
 // inputbox.onmouseout = function(e) {
@@ -34,11 +34,11 @@ var old_input_content = "";
 // }
 
 const initSendingButton = () => {
-  const buttonClass = '.im-send-btn.im-chat-input--send'
-  let  originalButton = document.querySelector(buttonClass);
+
+  let  originalButton = document.querySelector('.im-send-btn.im-chat-input--send');
   originalButton.setAttribute('style','display:none;');
   let newBtn = document.createElement('BUTTON');
-  newBtn.setAttribute('class',buttonClass);
+  newBtn.setAttribute('class',originalButton.getAttribute('class'));
   newBtn.setAttribute('aria-label',"Отправить");
   newBtn.setAttribute('data-tttype',"2");
   originalButton.parentElement.appendChild(newBtn);
@@ -66,10 +66,10 @@ initSendingButton()
 
 
 
-inputbox.onmouseover = inputbox.onchange = function(e) {
-  if (old_input_content)
-    e.target.innerText = old_input_content;
-}
+// inputbox.onmouseover = inputbox.onchange = function(e) {
+//   if (old_input_content)
+//     e.target.innerText = old_input_content;
+// }
 
 // Second - decrypt messages on mouse over
 var message_hist = document.querySelector(".im-page-chat-contain");
