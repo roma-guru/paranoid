@@ -18,20 +18,6 @@ companion.setPublicKey(keys.get_public(his_id));
 
 // First - encrypt input messagebox on mouse leave
 var old_input_content = "";
-// let inputbox = document.querySelector(".im-chat-input--text");
-
-
-// inputbox.onmouseout = function(e) {
-//   if (e.target.innerText) {
-//     console.debug(e.target.innerText);
-//     old_input_content = e.target.innerText;
-//     raw_text = old_input_content;
-//     encrypted = companion.encrypt(raw_text);
-//     //encrypted = encrypted + ' ' + myself.sign(crypto.MD5(encrypted),
-//       //crypto.MD5, "md5");
-//     e.target.innerText = btoa(encrypted);
-//   }
-// }
 
 const initSendingButton = () => {
 
@@ -61,15 +47,7 @@ const initSendingButton = () => {
   }
 
 };
-
 initSendingButton()
-
-
-
-// inputbox.onmouseover = inputbox.onchange = function(e) {
-//   if (old_input_content)
-//     e.target.innerText = old_input_content;
-// }
 
 // Second - decrypt messages on mouse over
 var message_hist = document.querySelector(".im-page-chat-contain");
@@ -93,3 +71,20 @@ message_hist.onmouseout = function(e) {
     elem.innerText = old_message_content.get(msgid);
   }
 }
+
+// Listen for keys updates
+console.debug("set msg listenener");
+browser.runtime.onMessage.addListener((m) => {
+  if (m.type=='set_key') {
+    const {user_id, key_val, is_private} = m;
+    console.info("setting key for", user_id);
+    console.debug("private:", is_private);
+    if (user_id && key_val) {
+      if (is_private)
+        keys.set_private(user_id, key_val, '');
+      else
+        keys.set_public(user_id, key_val);
+    } 
+  }
+});
+

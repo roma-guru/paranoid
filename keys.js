@@ -1,4 +1,5 @@
 const prefix = 'paranoid';
+
 function check_key(user_id, key) {
   if (!key) console.error("empty key for", user_id);
 }
@@ -19,7 +20,17 @@ function get_private(user_id, password) {
   return res;
 }
 
+function set_public(user_id, value) {
+  const key = `${prefix}:public:${user_id}`;
+  localStorage.setItem(key, value);
+}
+
+function set_private(user_id, value, password) {
+  const key = `${prefix}:private:${user_id}`;
+  localStorage.setItem(key, value);
+}
+
 module.exports = {
-  get_public,
-  get_private
+  get_public, get_private,
+  set_public, set_private
 }
