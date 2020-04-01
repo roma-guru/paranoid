@@ -1,5 +1,14 @@
 const jsencrypt = require('jsencrypt');
 const keys = require('./keys.js');
+const openpgp = require('./openpgp.min.js');
+
+(async () => {
+    const key = await openpgp.generateKey({
+        userIds: [{ name: 'Jon Smith'}], // you can pass multiple user IDs
+        rsaBits: 521,                                              // RSA key size
+    });
+    console.debug(key);
+})();
 
 console.info("paranoid extension started");
 
