@@ -1,10 +1,12 @@
 const jsencrypt = require('jsencrypt');
+const jshashes = require('jshashes');
 const keys = require('./keys.js');
 
 console.info("paranoid extension started");
 
 const myself = new jsencrypt.JSEncrypt();
 const companion = new jsencrypt.JSEncrypt();
+const MD5 = new jshashes.MD5();
 
 // Determine interlocutors using picture links in UI
 const my_id = document.querySelector('a.top_profile_link').attributes['href'].value.substr(1);
@@ -33,6 +35,10 @@ var old_input_content = "";
 //   }
 // }
 
+const sleep = (milliseconds) => {
+  return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
+
 const initSendingButton = () => {
 
   let  originalButton = document.querySelector('.im-send-btn.im-chat-input--send');
@@ -50,14 +56,11 @@ const initSendingButton = () => {
     old_input_content = inputbox.innerText;
     raw_text = old_input_content;
     encrypted = companion.encrypt(raw_text);
-    //encrypted = encrypted + ' ' + myself.sign(crypto.MD5(encrypted),
-    //crypto.MD5, "md5");
+    compound = btoa(encrypted) + ' ' + 
+      btoa(myself.sign(raw_text, MD5.raw, "md5"));
 
-    //TODO we need to check if the input is really changed so we can send encrypted data
-    //Sometimes inputbox doesn't have anough time to change and the original text is sent
-    inputbox.innerText = btoa(encrypted);
-    inputbox.innerText = btoa(encrypted);
-    originalButton.click()
+    inputbox.innerText = compound;
+    sleep(300).then(()=>originalButton.click());
   }
 
 };
@@ -80,10 +83,25 @@ message_hist.onmouseover = function(e) {
   if (elem.matches(".im-mess--text")) {
     const msgid = elem.parentNode.dataset["msgid"];
     old_message_content.set(msgid, elem.innerText);
-    decrypted = myself.decrypt(atob(elem.innerText));
-    if (decrypted) {
+    const parts = elem.innerText.split(' ');
+    const decrypted = myself.decrypt(atob(parts[0]));
+    const signature = parts[1];
+    if (decrypted)
         elem.innerText = decrypted;
+    else
+      console.warn("can't decrypt");
+
+    if (decrypted && signature) {
+        const verified = 
+          companion.verify(decrypted, atob(signature), MD5.raw);
+        if (verified) 
+          elem.innerText += ' ✓';
+        else
+          elem.innerText += ' ✗';
+    } else {
+      console.warn("no signature for message");
     }
+
   }
 }
 message_hist.onmouseout = function(e) {
