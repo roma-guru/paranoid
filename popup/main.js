@@ -1,7 +1,8 @@
-function importKey(isPrivate) {
-  const user_id = document.querySelector("#user_id").value
-  const key_val = document.querySelector("#key_value").value
-  console.debug("Private?",isPrivate);
+const sendKey = (key_val) => {
+  const user_id = document.querySelector("#user_id").value;
+  const isPrivate = key_val.indexOf("PRIVATE KEY") >- 1;
+  const type = isPrivate? "private":"public";
+  console.info(`importing ${type} for ${user_id}`);
 
   browser.tabs.query({
     currentWindow: true, active:true}).then((tabs)=>{
@@ -15,21 +16,14 @@ function importKey(isPrivate) {
     });
 }
 
-function onReloadClick(e) {
+document.querySelector("#reload").onclick = (e) => {
     browser.runtime.reload();
     //browser.tabs.reload();
     console.info("paranoid reloaded");
-}
+};
 
-function onImportPublicClick(e) {
-  importKey(false);
+document.querySelector("#import_key").onchange = (e) => {
+  for (file of e.target.files) 
+    file.text().then(sendKey).catch((err)=>console.error(err));
 }
-
-function onImportPrivateClick(e) {
-  importKey(true);
-}
-
-document.querySelector("#reload").onclick = onReloadClick;
-document.querySelector("#import-public").onclick = onImportPublicClick;
-document.querySelector("#import-private").onclick = onImportPrivateClick;
 

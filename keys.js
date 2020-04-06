@@ -22,11 +22,13 @@ function get_private(user_id, password) {
 
 function set_public(user_id, value) {
   const key = `${prefix}:public:${user_id}`;
+  console.info(`set key ${key}`);
   localStorage.setItem(key, value);
 }
 
 function set_private(user_id, value, password) {
   const key = `${prefix}:private:${user_id}`;
+  console.info(`set key ${key}`);
   localStorage.setItem(key, value);
 }
 
