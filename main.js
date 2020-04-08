@@ -17,23 +17,18 @@ console.debug(my_id, his_id);
 // Inject plugin UI
 console.info("preparing extension ui");
 ui.injectUI();
-console.debug("ui finished");
 
 // Load keys upfront
 myself.setPublicKey(keys.get_public(my_id));
 myself.setPrivateKey(keys.get_private(my_id, 'passwd'));
 companion.setPublicKey(keys.get_public(his_id));
 
-// First - encrypt input messagebox on mouse leave
-var old_input_content = "";
-// let inputbox = document.querySelector(".im-chat-input--text");
-
-
 const sleep = (milliseconds) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
 
 const initSendingButton = () => {
+  let  old_input_content = "";
   let  originalButton = document.querySelector('.im-send-btn.im-chat-input--send');
   originalButton.setAttribute('style','display:none;');
   let newBtn = document.createElement('BUTTON');
@@ -62,7 +57,7 @@ initSendingButton()
 var message_hist = document.querySelector(".im-page-chat-contain");
 var old_message_content = new Map();
 
-message_hist.onmouseover = function(e) {
+message_hist.onmouseover = (e) => {
   const elem = e.target;
   if (elem.matches(".im-mess--text")) {
     const msgid = elem.parentNode.dataset["msgid"];
@@ -88,7 +83,7 @@ message_hist.onmouseover = function(e) {
 
   }
 }
-message_hist.onmouseout = function(e) {
+message_hist.onmouseout = (e) => {
   const elem = e.target;
   if (elem.matches(".im-mess--text")) {
     const msgid = elem.parentNode.dataset["msgid"];
