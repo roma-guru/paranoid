@@ -1,6 +1,7 @@
 const jsencrypt = require('jsencrypt');
 const jshashes = require('jshashes');
 const keys = require('./keys.js');
+const ui = require('./ui.js'); 
 
 console.info("paranoid extension started");
 
@@ -13,6 +14,11 @@ const my_id = document.querySelector('a.top_profile_link').attributes['href'].va
 const his_id = document.querySelector('.im-page--aside-photo a').attributes.href.value.substr(1);
 console.debug(my_id, his_id);
 
+// Inject plugin UI
+console.info("preparing extension ui");
+ui.injectUI();
+console.debug("ui finished");
+
 // Load keys upfront
 myself.setPublicKey(keys.get_public(my_id));
 myself.setPrivateKey(keys.get_private(my_id, 'passwd'));
@@ -23,24 +29,11 @@ var old_input_content = "";
 // let inputbox = document.querySelector(".im-chat-input--text");
 
 
-// inputbox.onmouseout = function(e) {
-//   if (e.target.innerText) {
-//     console.debug(e.target.innerText);
-//     old_input_content = e.target.innerText;
-//     raw_text = old_input_content;
-//     encrypted = companion.encrypt(raw_text);
-//     //encrypted = encrypted + ' ' + myself.sign(crypto.MD5(encrypted),
-//       //crypto.MD5, "md5");
-//     e.target.innerText = btoa(encrypted);
-//   }
-// }
-
 const sleep = (milliseconds) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
 
 const initSendingButton = () => {
-
   let  originalButton = document.querySelector('.im-send-btn.im-chat-input--send');
   originalButton.setAttribute('style','display:none;');
   let newBtn = document.createElement('BUTTON');
@@ -62,17 +55,8 @@ const initSendingButton = () => {
     inputbox.innerText = compound;
     sleep(300).then(()=>originalButton.click());
   }
-
 };
-
 initSendingButton()
-
-
-
-// inputbox.onmouseover = inputbox.onchange = function(e) {
-//   if (old_input_content)
-//     e.target.innerText = old_input_content;
-// }
 
 // Second - decrypt messages on mouse over
 var message_hist = document.querySelector(".im-page-chat-contain");
