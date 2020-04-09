@@ -16,7 +16,7 @@ console.debug(my_id, his_id);
 
 // Inject plugin UI
 console.info("preparing extension ui");
-ui.injectUI();
+ui.injectUI(my_id, his_id);
 
 // Load keys upfront
 myself.setPublicKey(keys.get_public(my_id));
@@ -31,14 +31,11 @@ const initSendingButton = () => {
   let  old_input_content = "";
   let  originalButton = document.querySelector('.im-send-btn.im-chat-input--send');
   originalButton.setAttribute('style','display:none;');
-  let newBtn = document.createElement('BUTTON');
-  newBtn.setAttribute('class',originalButton.getAttribute('class'));
-  newBtn.setAttribute('aria-label',"Отправить");
-  newBtn.setAttribute('data-tttype',"2");
+  let newBtn = document.createElement('button');
+  newBtn.setAttribute('class', "im-send-btn im-chat-input--send");
   originalButton.parentElement.appendChild(newBtn);
 
   newBtn.onclick = () => {
-
     let inputbox = document.querySelector(".im-chat-input--text");
     console.debug(inputbox.innerText);
     old_input_content = inputbox.innerText;
@@ -60,6 +57,10 @@ var old_message_content = new Map();
 message_hist.onmouseover = (e) => {
   const elem = e.target;
   if (elem.matches(".im-mess--text")) {
+    // prevent blicking on message height changes
+    if (!elem.style.minHeight)
+      elem.style.minHeight = elem.getBoundingClientRect().height + "px";
+
     const msgid = elem.parentNode.dataset["msgid"];
     old_message_content.set(msgid, elem.innerText);
     const parts = elem.innerText.split(' ');
