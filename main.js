@@ -41,11 +41,11 @@ const initSendingButton = () => {
     old_input_content = inputbox.innerText;
     raw_text = old_input_content;
     encrypted = companion.encrypt(raw_text);
-    compound = btoa(encrypted) + ' ' + 
-      btoa(myself.sign(raw_text, MD5.raw, "md5"));
+    signature = myself.sign(raw_text, MD5.hex, "md5");
+    compound = `${encrypted} ${signature}`;
 
     inputbox.innerText = compound;
-    sleep(300).then(()=>originalButton.click());
+    sleep(100).then(()=>originalButton.click());
   }
 };
 initSendingButton()
@@ -64,7 +64,7 @@ message_hist.onmouseover = (e) => {
     const msgid = elem.parentNode.dataset["msgid"];
     old_message_content.set(msgid, elem.innerText);
     const parts = elem.innerText.split(' ');
-    const decrypted = myself.decrypt(atob(parts[0]));
+    const decrypted = myself.decrypt(parts[0]);
     const signature = parts[1];
     if (decrypted)
         elem.innerText = decrypted;
@@ -73,7 +73,7 @@ message_hist.onmouseover = (e) => {
 
     if (decrypted && signature) {
         const verified = 
-          companion.verify(decrypted, atob(signature), MD5.raw);
+          companion.verify(decrypted, signature, MD5.hex);
         if (verified) 
           elem.innerText += ' ✓';
         else
