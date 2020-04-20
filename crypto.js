@@ -3,14 +3,24 @@ const jshashes = require('jshashes');
 const keys = require('./keys.js');
 
 // RSA and hash objects
-const myself = new jsencrypt.JSEncrypt();
+const myself = new jsencrypt.JSEncrypt({default_key_size:512});
 const interloc = new jsencrypt.JSEncrypt();
 const MD5 = new jshashes.MD5();
 
 // Load keys upfront
 function preloadKeys(my_id, interloc_id) {
-  myself.setPublicKey(keys.get_public(my_id));
-  myself.setPrivateKey(keys.get_private(my_id, 'passwd'));
+  if (keys.get_public(my_id)) {
+    // load keys from storage
+    myself.setPublicKey(keys.get_public(my_id));
+    myself.setPrivateKey(keys.get_private(my_id, 'passwd'));
+  } else {
+    // or save new keys
+    keys.set_public(my_id, myself.getPublicKey());
+    keys.set_private(my_id, myself.getPrivateKey(), 'passwd');
+    alert("new keypair generated");
+    console.warn("copy your public key!")
+    console.info(myself.getPublicKey());
+  }
   interloc.setPublicKey(keys.get_public(interloc_id));
 }
 

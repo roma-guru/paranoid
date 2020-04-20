@@ -34,7 +34,7 @@ function injectSendButton() {
   }
 }
 
-function injectMenu(my_id, companion_id) {
+function injectMenu(my_id, interloc_id) {
   const new_html = `
   <div class="ui_actions_menu_sep"></div>
   <a tabindex="0" class="ui_actions_menu_item im-action
@@ -51,11 +51,13 @@ function injectMenu(my_id, companion_id) {
     for (file of e.target.files)
       file.text().then(key_val=>saveKey(my_id, key_val)).catch(
         err=>console.error(err));
+    preloadKeys(my_id, interloc_id);
   }
   menu.querySelector('#load-companion-keys').onchange = (e) => {
     for (file of e.target.files)
-      file.text().then(key_val=>saveKey(companion_id, key_val)).catch(
+      file.text().then(key_val=>saveKey(interloc_id, key_val)).catch(
         err=>console.error(err));
+    preloadKeys(my_id, interloc_id);
   }
 
 }
