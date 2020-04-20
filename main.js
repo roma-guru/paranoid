@@ -21,7 +21,3 @@ function init() {
 }
 
 init();
-browser.runtime.onMessage.addListener(req => {
-  console.debug("got msg from background");
-  if (req.type == "url_update") init();
-});
