@@ -8,7 +8,11 @@
   "icons": {
     "225": "icon.png"
   },
-  "permissions": ["storage", "tabs"],
+  "permissions": [
+      "storage",
+      "tabs",
+      "webNavigation"
+  ],
 
   "content_scripts": [
     {
