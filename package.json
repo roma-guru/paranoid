@@ -11,7 +11,8 @@
     "jshashes": "^1.0.8"
   },
   "scripts": {
-    "build": "browserify main.js -o dist/bundle.js"
+    "build": "browserify main.js -o dist/bundle.js",
+    "package": "tar cvf dist/paranoid.tar background/main.js dist/bundle.js manifest.json icon.png"
   },
   "devDependencies": {
     "browserify": "^16.5.0"
