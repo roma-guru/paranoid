@@ -14,23 +14,30 @@ function saveKey(user_id, key_val) {
   }
 }
 
-function injectSendButton() {
-  let  originalButton = document.querySelector('.im-send-btn.im-chat-input--send');
-  originalButton.setAttribute('style','display:none;');
-  let newBtn = document.createElement('button');
-  newBtn.setAttribute('class', "im-send-btn im-chat-input--send");
-  originalButton.parentElement.appendChild(newBtn);
+function injectInput() {
+  let new_inputbox = document.createElement('input');
+  let panel = document.querySelector(".im-chat-input");
 
-  newBtn.onclick = () => {
-    let inputbox = document.querySelector(".im-chat-input--text");
-    raw_text = inputbox.innerText;
+  panel.style = "display: none";
+  new_inputbox.style = "width:100%;font-size:13pt;color:orange;background-color:grey";
+  new_inputbox.maxLength = 50;
+  new_inputbox.placeholder = "Type here, hit ⏎ to send";
+  panel.parentElement.appendChild(new_inputbox);
+
+  let orig_button = document.querySelector('.im-send-btn.im-chat-input--send');
+  let orig_inputbox = document.querySelector(".im-chat-input--text");
+
+  new_inputbox.onkeydown = (e) => {
+    if (e.code != "Enter") return;
+    raw_text = new_inputbox.value;
     encrypted = crypto.encryptMyMessage(raw_text);
     signature = crypto.signMyMessage(raw_text);
     compound = `${encrypted} ${signature}`;
 
-    inputbox.innerText = compound;
+    orig_inputbox.innerText = compound;
+    new_inputbox.value = "";
     // give time to update DOM
-    utils.sleep(100).then(()=>originalButton.click());
+    utils.sleep(100).then(()=>orig_button.click());
   }
 }
 
@@ -110,6 +117,6 @@ function getInterlocs() {
 }
 
 module.exports = { 
-  injectMenu, injectSendButton,
+  injectMenu, injectInput,
   injectMessagesViewer, getInterlocs,
 };

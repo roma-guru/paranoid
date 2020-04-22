@@ -1,6 +1,5 @@
 const crypto = require('./crypto.js');
 const ui = require('./ui.js'); 
-const browser = chrome || browser;
 console.info("paranoid extension started");
 
 // TODO: run on each location update!
@@ -13,7 +12,7 @@ function init() {
     crypto.preloadKeys(my_id, interloc_id);
 
     ui.injectMenu(my_id, interloc_id);
-    ui.injectSendButton();
+    ui.injectInput();
     ui.injectMessagesViewer();
   } else {
     console.info("you are not in private chat");
