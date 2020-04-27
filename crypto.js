@@ -13,13 +13,15 @@ function preloadKeys(my_id, interloc_id) {
     // load keys from storage
     myself.setPublicKey(keys.get_public(my_id));
     myself.setPrivateKey(keys.get_private(my_id, 'passwd'));
-  } else {
+  } else if (confirm("keys not found, generate?")) {
     // or save new keys
     keys.set_public(my_id, myself.getPublicKey());
     keys.set_private(my_id, myself.getPrivateKey(), 'passwd');
-    alert("new keypair generated");
-    console.warn("copy your public key!")
-    console.info(myself.getPublicKey());
+    console.warn("copy your new public key!");
+    // TODO: use vk natime MessageBox
+    const pub_key = myself.getPublicKey();
+    alert("copy your new public key:\n" + pub_key);
+    console.info("copy your new public key:\n" + pub_key);
   }
   interloc.setPublicKey(keys.get_public(interloc_id));
 }
