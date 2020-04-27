@@ -8,7 +8,7 @@ function get_public(user_id) {
   const key = `${prefix}:public:${user_id}`;
   const res = localStorage.getItem(key);
   check_key(user_id, res);
-  console.debug(user_id, res);
+  console.debug(user_id, '\n', res);
   return res;
 }
 
