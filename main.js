@@ -2,13 +2,12 @@ const crypto = require('./crypto.js');
 const ui = require('./ui.js'); 
 console.info("paranoid extension started");
 
-// TODO: run on each location update!
 function init() {
   if (location.search.match(/sel/)) {
     // Only p2p messages
-    console.info("preparing extension ui");
+    console.info("private chat, preparing extension ui");
     const [my_id, interloc_id] = ui.getInterlocs();
-    console.debug(my_id, interloc_id);
+    console.info(my_id, interloc_id);
     crypto.preloadKeys(my_id, interloc_id);
 
     ui.injectMenu(my_id, interloc_id);
@@ -20,3 +19,8 @@ function init() {
 }
 
 init();
+// Reload keys on chat switches
+browser.runtime.onMessage.addListener(msg => {
+  console.info("chat changed, reloading keys");
+  if (msg.command == "init") init();
+});
