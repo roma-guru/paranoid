@@ -27,7 +27,7 @@ function preloadKeys(my_id, interloc_id) {
 }
 
 function encryptMyMessage(raw_text) {
-  return interloc.encrypt(raw_text);
+  return [interloc.encrypt(raw_text), myself.encrypt(raw_text)];
 }
 
 function decryptInterlocMessage(encrypted) {
@@ -35,7 +35,7 @@ function decryptInterlocMessage(encrypted) {
 }
 
 function signMyMessage(text) {
-  return myself.sign(raw_text, MD5.hex, "md5");
+  return myself.sign(text, MD5.hex, "md5");
 }
 
 function verifyInterlocSignature(raw_text, signature) {

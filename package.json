@@ -11,10 +11,14 @@
     "jshashes": "^1.0.8"
   },
   "scripts": {
-    "build": "browserify main.js -o dist/bundle.js",
-    "package": "tar cvf dist/paranoid.tar background/main.js dist/bundle.js manifest.json icon.png"
+    "test": "npx mocha",
+    "build": "npx browserify main.js -o dist/bundle.js",
+    "serve": "web-ext run -u vk.com/im --keep-profile-changes",
+    "package": ". .env && web-ext sign -a dist --api-key $JWT_ISSUER --api-secret $JWT_TOKEN"
   },
   "devDependencies": {
-    "browserify": "^16.5.0"
+    "browserify": "^16.5.0",
+    "mocha": "^7.1.2",
+    "web-ext": "^4.2.0"
   }
 }

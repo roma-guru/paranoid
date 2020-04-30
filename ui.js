@@ -33,11 +33,11 @@ function injectInput() {
 
   new_inputbox.onkeydown = (e) => {
     if (e.code != "Enter") return;
-    raw_text = new_inputbox.value;
+    let raw_text = new_inputbox.value;
     if (raw_text) {
-      encrypted = crypto.encryptMyMessage(raw_text);
-      signature = crypto.signMyMessage(raw_text);
-      compound = `${encrypted} ${signature}`;
+      let [encrypted1, encrypted2] = crypto.encryptMyMessage(raw_text);
+      let signature = crypto.signMyMessage(raw_text);
+      let compound = `${encrypted1} ${signature} ${encrypted2}`;
 
       orig_inputbox.innerText = compound;
       new_inputbox.value = "";
@@ -90,18 +90,22 @@ function injectMessagesViewer() {
         elem.style.minHeight = elem.getBoundingClientRect().height + "px";
 
       const msgid = elem.parentNode.dataset["msgid"];
+      const [my_id, interloc_id] = getInterlocs();
+      const msg_author = getMsgAuthor(msgid);
+      console.debug("author is ", msg_author);
+
       old_message_content.set(msgid, elem.innerText);
       const parts = elem.innerText.split(' ');
-      const decrypted = crypto.decryptInterlocMessage(parts[0]);
+      const encrypted = msg_author == my_id? parts[2] : parts[0];
+      const decrypted = crypto.decryptInterlocMessage(encrypted);
       const signature = parts[1];
       if (decrypted)
         elem.innerText = decrypted;
       else
-        console.warn("can't decrypt");
+        console.warn("can't decrypt message");
 
       if (decrypted && signature) {
-          const verified = crypto.verifyInterlocSignature(
-            decrypted, signature);
+          const verified = msg_author == my_id || crypto.verifyInterlocSignature(decrypted, signature);
           elem.innerText += verified? ' ✓':' ✗';
       } else {
         console.warn("no signature for message");
@@ -123,6 +127,13 @@ function getInterlocs() {
   const my_id = document.querySelector('a.top_profile_link').attributes['href'].value.substr(1);
   const interloc_id = document.querySelector('.im-page--aside-photo a').attributes.href.value.substr(1);
   return [my_id, interloc_id];
+}
+
+function getMsgAuthor(msgid) {
+  msgid = String(msgid);
+  const msg_elem = document.querySelector(`.im-mess[data-msgid="${msgid}"]`);
+  const link_elem = msg_elem.parentElement.parentElement.querySelector('a.im-mess-stack--lnk');
+  return link_elem.attributes['href'].value.substr(1);
 }
 
 module.exports = { 
