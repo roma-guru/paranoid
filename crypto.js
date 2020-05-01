@@ -7,22 +7,18 @@ const myself = new jsencrypt.JSEncrypt({default_key_size:512});
 const interloc = new jsencrypt.JSEncrypt();
 const MD5 = new jshashes.MD5();
 
-// Load keys upfront
-function preloadKeys(my_id, interloc_id) {
-  if (keys.get_public(my_id)) {
-    // load keys from storage
+function genMyKeys(my_id) {
+  keys.set_public(my_id, myself.getPublicKey());
+  keys.set_private(my_id, myself.getPrivateKey(), 'passwd');
+  return myself.getPublicKey();
+}
+
+function reloadMyKeys(my_id) {
     myself.setPublicKey(keys.get_public(my_id));
     myself.setPrivateKey(keys.get_private(my_id, 'passwd'));
-  } else if (confirm("keys not found, generate?")) {
-    // or save new keys
-    keys.set_public(my_id, myself.getPublicKey());
-    keys.set_private(my_id, myself.getPrivateKey(), 'passwd');
-    console.warn("copy your new public key!");
-    // TODO: use vk natime MessageBox
-    const pub_key = myself.getPublicKey();
-    alert("copy your new public key:\n" + pub_key);
-    console.info("copy your new public key:\n" + pub_key);
-  }
+}
+
+function reloadInterlocKeys(interloc_id) {
   interloc.setPublicKey(keys.get_public(interloc_id));
 }
 
@@ -43,6 +39,7 @@ function verifyInterlocSignature(raw_text, signature) {
 }
 
 module.exports = {
-  encryptMyMessage, signMyMessage, preloadKeys,
+  encryptMyMessage, signMyMessage,
+  reloadInterlocKeys, reloadMyKeys, genMyKeys,
   decryptInterlocMessage, verifyInterlocSignature,
 };

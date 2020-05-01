@@ -16,7 +16,10 @@ function saveKey(user_id, key_val) {
 
 function injectInput() {
   // already done
-  if (document.querySelector('.paranoid-input')) return;
+  if (document.querySelector('.paranoid-input')) {
+    console.debug("input already injected");
+    return;
+  }
 
   let new_inputbox = document.createElement('input');
   let panel = document.querySelector(".im-chat-input");
@@ -48,32 +51,40 @@ function injectInput() {
 }
 
 function injectMenu(my_id, interloc_id) {
-  // already done
-  if (document.querySelector('.paranoid-menu')) return;
+  // drop old one, with old keys
+  const old_menu = document.querySelector('.paranoid-menu');
+  if (old_menu) {
+    console.debug("reinjecting menu cause interloc change");
+    old_menu.remove();
+  }
 
   const new_html = `
-  <div class="paranoid-menu ui_actions_menu_sep"></div>
-  <a tabindex="0" class="ui_actions_menu_item im-action
-    im-action_invite">Загрузить мои приватный/публичный ключи</a>
-    <input type="file" class="ui_actions_menu_item" id="load-my-keys" multiple/>
-  <a tabindex="0" class="ui_actions_menu_item im-action 
-    im-action_invite">Загрузить публичный ключ собеседника</a>
-    <input type="file" class="ui_actions_menu_item" id="load-companion-keys"/>
+  <div class="paranoid-menu">
+    <div class="ui_actions_menu_sep"></div>
+    <a tabindex="0" class="ui_actions_menu_item im-action
+      im-action_invite">Загрузить мои приватный/публичный ключи</a>
+      <input type="file" class="ui_actions_menu_item" id="load-my-keys" multiple/>
+    <a tabindex="0" class="ui_actions_menu_item im-action 
+      im-action_invite">Загрузить публичный ключ собеседника</a>
+      <input type="file" class="ui_actions_menu_item" id="load-companion-keys"/>
+  </div>
   `;
   const menu = document.querySelector('div._im_dialog_action_wrapper div._ui_menu_wrap div._ui_menu');
   menu.innerHTML += new_html;
 
   menu.querySelector('#load-my-keys').onchange = (e) => {
     for (file of e.target.files)
-      file.text().then(key_val=>saveKey(my_id, key_val)).catch(
-        err=>console.error(err));
-    crypto.preloadKeys(my_id, interloc_id);
+      file.text().then(key_val=>{
+        saveKey(my_id, key_val);
+        crypto.reloadMyKeys(my_id);
+      }).catch(err=>console.error(err));
   }
   menu.querySelector('#load-companion-keys').onchange = (e) => {
     for (file of e.target.files)
-      file.text().then(key_val=>saveKey(interloc_id, key_val)).catch(
-        err=>console.error(err));
-    crypto.preloadKeys(my_id, interloc_id);
+      file.text().then(key_val=>{
+        saveKey(interloc_id, key_val);
+        crypto.reloadInterlocKeys(interloc_id);
+      }).catch(err=>console.error(err));
   }
 
 }

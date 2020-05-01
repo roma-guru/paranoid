@@ -1,5 +1,4 @@
 {
-
   "description": "P2P encryption in social networks now in your hands",
   "manifest_version": 2,
   "name": "Paranoid",
@@ -16,7 +15,7 @@
 
   "content_scripts": [
     {
-      "matches": ["https://vk.com/im?*", "https://vk.com/al_im.php?*"],
+      "matches": ["https://vk.com/*"],
       "js": ["dist/bundle.js"]
     }
   ],

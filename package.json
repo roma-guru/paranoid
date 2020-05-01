@@ -13,7 +13,7 @@
   "scripts": {
     "test": "npx mocha",
     "build": "npx browserify main.js -o dist/bundle.js",
-    "serve": "web-ext run -u vk.com/im --keep-profile-changes",
+    "serve": "web-ext run -u vk.com/im -p Paranoid --keep-profile-changes",
     "package": ". .env && web-ext sign -a dist --api-key $JWT_ISSUER --api-secret $JWT_TOKEN"
   },
   "devDependencies": {
