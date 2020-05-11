@@ -7,6 +7,27 @@ const myself = new jsencrypt.JSEncrypt({default_key_size:512});
 const interloc = new jsencrypt.JSEncrypt();
 const MD5 = new jshashes.MD5();
 
+
+function saveKey(user_id, key_val) {
+  const isPrivate = key_val.indexOf("PRIVATE KEY") >- 1;
+  const type = isPrivate? "private":"public";
+  console.info(`importing ${type} for ${user_id}`);
+
+  if (isPrivate) {
+    keys.set_private(user_id, key_val, "passwprd");
+  } else {
+    keys.set_public(user_id, key_val);
+  }
+}
+
+function checkKey(user_id) {
+  return keys.get_public(user_id);
+}
+
+function checkBothKeys(user_id) {
+  return keys.get_public(user_id) && keys.get_private(user_id);
+}
+
 function genMyKeys(my_id) {
   keys.set_public(my_id, myself.getPublicKey());
   keys.set_private(my_id, myself.getPrivateKey(), 'passwd');
@@ -42,4 +63,5 @@ module.exports = {
   encryptMyMessage, signMyMessage,
   reloadInterlocKeys, reloadMyKeys, genMyKeys,
   decryptInterlocMessage, verifyInterlocSignature,
+  saveKey, checkKey, checkBothKeys,
 };

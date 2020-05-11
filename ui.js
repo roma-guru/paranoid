@@ -1,18 +1,5 @@
-const keys = require('./keys.js');
 const utils = require('./utils.js');
 const crypto = require('./crypto.js');
-
-function saveKey(user_id, key_val) {
-  const isPrivate = key_val.indexOf("PRIVATE KEY") >- 1;
-  const type = isPrivate? "private":"public";
-  console.info(`importing ${type} for ${user_id}`);
-
-  if (isPrivate) {
-    keys.set_private(user_id, key_val, "passwprd");
-  } else {
-    keys.set_public(user_id, key_val);
-  }
-}
 
 function injectInput() {
   // already done
@@ -35,8 +22,16 @@ function injectInput() {
   let orig_inputbox = document.querySelector(".im-chat-input--text");
 
   new_inputbox.onkeydown = (e) => {
+    // send on enter
     if (e.code != "Enter") return;
-    let raw_text = new_inputbox.value;
+    const [my_id, interloc_id] = getInterlocs();
+    const raw_text = new_inputbox.value;
+    if (!crypto.checkBothKeys(my_id)) {
+      alert("can't encrypt - missing some of your keys"); return;
+    }
+    if (!crypto.checkKey(interloc_id)) {
+      alert("can't encrypt - missing your dude's pubkey"); return;
+    }
     if (raw_text) {
       let [encrypted1, encrypted2] = crypto.encryptMyMessage(raw_text);
       let signature = crypto.signMyMessage(raw_text);
@@ -75,14 +70,14 @@ function injectMenu(my_id, interloc_id) {
   menu.querySelector('#load-my-keys').onchange = (e) => {
     for (file of e.target.files)
       file.text().then(key_val=>{
-        saveKey(my_id, key_val);
+        crypto.saveKey(my_id, key_val);
         crypto.reloadMyKeys(my_id);
       }).catch(err=>console.error(err));
   }
   menu.querySelector('#load-companion-keys').onchange = (e) => {
     for (file of e.target.files)
       file.text().then(key_val=>{
-        saveKey(interloc_id, key_val);
+        crypto.saveKey(interloc_id, key_val);
         crypto.reloadInterlocKeys(interloc_id);
       }).catch(err=>console.error(err));
   }
