@@ -67,6 +67,11 @@ function signMyMessage(text) {
   return myself.sign(text, MD5.hex, "md5");
 }
 
+// Verify outcoming message, be paranoid
+function verifyMessage(text) {
+  return myself.verify(text, MD5.hex, "md5");
+}
+
 // Verify incoming message
 function verifyInterlocSignature(raw_text, signature) {
   return interloc.verify(raw_text, signature, MD5.hex);

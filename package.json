@@ -12,6 +12,7 @@
   },
   "scripts": {
     "test": "npx jasmine --config=tests/jasmine.json",
+    "func-test": "node tests/func_test.js",
     "build": "npx browserify main.js -o dist/bundle.js",
     "serve": "web-ext run -u vk.com/im -p Paranoid --keep-profile-changes",
     "package": ". .env && web-ext sign -a dist --api-key $JWT_ISSUER --api-secret $JWT_TOKEN"
@@ -20,6 +21,7 @@
     "browserify": "^16.5.0",
     "jasmine": "^3.5.0",
     "jsdom": "^16.2.2",
+    "selenium-webdriver": "^4.0.0-alpha.7",
     "web-ext": "^4.2.0"
   }
 }
