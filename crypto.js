@@ -8,7 +8,7 @@ const myself = new jsencrypt.JSEncrypt({default_key_size:512});
 const interloc = new jsencrypt.JSEncrypt();
 const MD5 = new jshashes.MD5();
 
-
+// TODO: move to keys.js
 // Save priv/pub key for user_id to storage 
 function saveKey(user_id, key_val) {
   const isPrivate = key_val.indexOf("PRIVATE KEY") >- 1;
