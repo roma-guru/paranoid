@@ -68,8 +68,8 @@ function signMyMessage(text) {
 }
 
 // Verify outcoming message, be paranoid
-function verifyMessage(text) {
-  return myself.verify(text, MD5.hex, "md5");
+function verifyMyMessage(raw_text, signature) {
+  return myself.verify(raw_text, signature, MD5.hex);
 }
 
 // Verify incoming message
@@ -78,7 +78,7 @@ function verifyInterlocSignature(raw_text, signature) {
 }
 
 module.exports = {
-  encryptMyMessage, signMyMessage,
+  encryptMyMessage, signMyMessage, verifyMyMessage,
   reloadInterlocKeys, reloadMyKeys, genMyKeys,
   decryptInterlocMessage, verifyInterlocSignature,
   saveKey, checkKey, checkBothKeys,
