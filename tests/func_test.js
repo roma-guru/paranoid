@@ -1,6 +1,9 @@
 const {Builder, By, Key, until} = require('selenium-webdriver');
 const firefox = require('selenium-webdriver/firefox');
+const Command = require('selenium-webdriver/lib/command').Command;
 const assert = require('assert');
+const path = require('path');
+const colors = require('colors');
 const env = process.env;
 
 function sleep(ms) {
@@ -8,6 +11,18 @@ function sleep(ms) {
     setTimeout(resolve, ms);
   });
 } 
+
+// Install unsigned extension
+function install_webext(driver, extension) { 
+  let cmd = new Command('moz-install-web-ext')
+    .setParameter('path', path.resolve(extension))
+    .setParameter('temporary', true);
+
+  driver.getExecutor()
+    .defineCommand(cmd.getName(), 'POST', '/session/:sessionId/moz/addon/install');
+
+  return driver.execute(cmd);
+}
 
 async function login_vk(bro, login, password) {
     await bro.get("https://vk.com");
@@ -57,25 +72,24 @@ async function read_message(bro, index) {
 }
 
 async function import_key(bro, user_id, val) {
-  let key = `paranoid:public:${user_id}`;
-  let script = `localStorage.setItem('${key}', \`${val}\`)`;
+  let script = `keys.set_public('${user_id}', \`${val}\`)`;
   await bro.executeScript(script);
 }
 
 async function export_key(bro, user_id) {
-  let key = `paranoid:public:${user_id}`;
-  let script = `return localStorage.getItem('${key}')`;
+  let script = `return keys.get_public('${user_id}')`;
   return await bro.executeScript(script);
 }
 
 (async function() {
   let options = new firefox.Options().setBinary(env.FIREFOX_BINARY);
+  // env.MOZ_HEADLESS = '1';
   let bro1 = await new Builder().forBrowser('firefox').setFirefoxOptions(options).build();
   let bro2 = await new Builder().forBrowser('firefox').setFirefoxOptions(options).build();
 
   try {
-    await bro1.installAddon(`dist/paranoid-${env.ADDON_VERSION}-an+fx.xpi`);
-    await bro2.installAddon(`dist/paranoid-${env.ADDON_VERSION}-an+fx.xpi`);
+    install_webext(bro1, `dist/paranoid-${env.ADDON_VERSION}.zip`);
+    install_webext(bro2, `dist/paranoid-${env.ADDON_VERSION}.zip`);
     await bro1.manage().window().setRect({x:0, y:0});
     await bro2.manage().window().setRect({x:700, y:0});
 
@@ -102,8 +116,11 @@ async function export_key(bro, user_id) {
     await sleep(1000);
     await read_message(bro1, 0);
     await read_message(bro2, 1);
+    console.info("TEST PASS".green);
+  } catch (err) {
+    console.error("TEST FAIL".red);
+    console.debug(err);
   } finally {
-    await sleep(20*1000);
     await bro1.quit();
     await bro2.quit();
   }

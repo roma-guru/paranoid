@@ -3,6 +3,10 @@ const ui = require('./ui.js');
 const keys = require('./keys.js');
 console.info("paranoid extension started");
 
+// for testing automation
+window.keys = keys;
+window.ui = ui;
+
 function init() {
   if (location.pathname.match(/im/) && location.search.match(/sel/)) {
     // Only p2p messages
