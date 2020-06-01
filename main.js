@@ -3,9 +3,11 @@ const ui = require('./ui.js');
 const keys = require('./keys.js');
 console.info("paranoid extension started");
 
-// for testing automation
-window.keys = keys;
-window.ui = ui;
+// for test automation (firefox only)
+window.wrappedJSObject.keys = cloneInto(keys, window,
+  {cloneFunctions: true});
+window.wrappedJSObject.ui = cloneInto(ui, window,
+  {cloneFunctions: true});
 
 function init() {
   if (location.pathname.match(/im/) && location.search.match(/sel/)) {

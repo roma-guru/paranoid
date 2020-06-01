@@ -44,31 +44,13 @@ async function accept_key(bro) {
 }
 
 async function send_message(bro, msg) {
-  let selector = By.className("paranoid-input");
-  await bro.wait(until.elementLocated(selector), 1000);
-  let input = await bro.findElement(selector);
-  await input.sendKeys(msg);
-  await input.sendKeys(Key.ENTER);
-  let script = `
-    var input=document.querySelector('.paranoid-input');
-    var event=new KeyboardEvent("keydown", {code:"Enter"});
-    input.dispatchEvent(event);`;
+  let script = `ui.test_send('${msg}');`
   await bro.executeScript(script);
 }
 
-async function read_message(bro, index) {
-  let selector = By.className("im-mess");
-  await bro.wait(until.elementsLocated(selector), 1000);
-  let messages = await bro.findElements(selector);
-  let mess = messages[messages.length - 1 - index];
-  let coords = await mess.getRect();
-  let text = await mess.getText();
-  console.debug(coords, text);
-  let script = `
-    var message_hist=document.querySelector(".im-page-chat-contain");
-    var event=new MouseEvent("mouseover", ${JSON.stringify(coords)});
-    message_hist.dispatchEvent(event);`;
-  await bro.executeScript(script);
+async function read_message(bro) {
+  let script = `return ui.test_read();`
+  return await bro.executeScript(script);
 }
 
 async function import_key(bro, user_id, val) {
@@ -108,14 +90,11 @@ async function export_key(bro, user_id) {
     assert(bro1_key == await export_key(bro2, env.USER1_NAME));
     assert(bro2_key == await export_key(bro1, env.USER2_NAME));
 
-    // Have to refresh, because imported keys directly
-    await bro1.navigate().refresh();
-    await bro2.navigate().refresh();
     await send_message(bro1, "hello from bro1");
     await send_message(bro2, "hello from bro2");
     await sleep(1000);
-    await read_message(bro1, 0);
-    await read_message(bro2, 1);
+    console.log(await read_message(bro1));
+    console.log(await read_message(bro2));
     console.info("TEST PASS".green);
   } catch (err) {
     console.error("TEST FAIL".red);

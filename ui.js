@@ -95,28 +95,7 @@ function injectMessagesViewer() {
       if (!elem.style.minHeight)
         elem.style.minHeight = elem.getBoundingClientRect().height + "px";
 
-      const msgid = elem.parentNode.dataset["msgid"];
-      const [my_id, interloc_id] = getInterlocs();
-      const msg_author = getMsgAuthor(msgid);
-      console.debug("author is ", msg_author);
-
-      old_message_content.set(msgid, elem.innerText);
-      const parts = elem.innerText.split(' ');
-      const encrypted = msg_author == my_id? parts[2] : parts[0];
-      const decrypted = crypto.decryptInterlocMessage(encrypted);
-      const signature = parts[1];
-      if (decrypted)
-        elem.innerText = decrypted;
-      else
-        console.warn("can't decrypt message");
-
-      if (decrypted && signature) {
-          const verified = msg_author == my_id || crypto.verifyInterlocSignature(decrypted, signature);
-          elem.innerText += verified? ' ✓':' ✗';
-      } else {
-        console.warn("no signature for message");
-      }
-
+      decryptMessage(elem);
     }
   }
   message_hist.onmouseout = (e) => {
@@ -124,6 +103,29 @@ function injectMessagesViewer() {
     if (elem.matches(".im-mess--text")) {
       const msgid = elem.parentNode.dataset["msgid"];
       elem.innerText = old_message_content.get(msgid);
+    }
+  }
+
+  function decryptMessage(elem) {
+    const msgid = elem.parentNode.dataset["msgid"];
+    const [my_id, interloc_id] = getInterlocs();
+    const msg_author = getMsgAuthor(msgid);
+    console.debug("author is ", msg_author);
+    old_message_content.set(msgid, elem.innerText);
+    const parts = elem.innerText.split(' ');
+    const encrypted = msg_author == my_id ? parts[2] : parts[0];
+    const decrypted = crypto.decryptInterlocMessage(encrypted);
+    const signature = parts[1];
+    if (decrypted)
+      elem.innerText = decrypted;
+    else
+      console.warn("can't decrypt message");
+    if (decrypted && signature) {
+      const verified = msg_author == my_id || crypto.verifyInterlocSignature(decrypted, signature);
+      elem.innerText += verified ? ' ✓' : ' ✗';
+    }
+    else {
+      console.warn("no signature for message");
     }
   }
 }
@@ -142,7 +144,21 @@ function getMsgAuthor(msgid) {
   return link_elem.attributes['href'].value.substr(1);
 }
 
+function test_send(msg) {
+  let event=new KeyboardEvent("keydown", {code:"Enter"});
+  let input = document.querySelector('.paranoid-input');
+  input.value = msg;
+  input.dispatchEvent(event);
+}
+
+function test_read() {
+  let messages = document.querySelectorAll(".im-mess--text");
+  let last_msg = messages[messages.length - 1];
+  return last_msg.innerText;
+}
+
 module.exports = { 
   injectMenu, injectInput,
   injectMessagesViewer, getInterlocs,
+  test_read, test_send,
 };
