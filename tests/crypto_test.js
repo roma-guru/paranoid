@@ -1,12 +1,12 @@
 const crypto = require('../crypto.js');
 
-// TODO: test separately with fixtures
 describe("encryption/decryption", () => {
   let msg = "hello paranoid";
 
   it("encrypts/decrypts my message", () => {
     // enc1 - encrypted with interloc key, enc2 - with mine
     let [ enc1, enc2 ] = crypto.encryptMyMessage(msg);
+    console.debug(enc1);
     expect(enc1).not.toBeNull();
     expect(enc1[enc1.length-1]).toBe('=');
     expect(enc2).not.toBeNull();

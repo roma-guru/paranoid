@@ -11,15 +11,16 @@
     "jshashes": "^1.0.8"
   },
   "scripts": {
-    "test": "npx jasmine --config=tests/jasmine.json",
+    "test": "istanbul test jasmine -- --random=true --seed=1 --config=tests/jasmine.json",
     "func-test": "source tests/.env && node tests/func_test.js",
-    "build": "npx browserify main.js -o build/bundle.js && npx web-ext build -a dist --overwrite-dest",
-    "serve": "web-ext run -u vk.com/im -p Paranoid --keep-profile-changes",
+    "build": "browserify main.js -o build/bundle.js && web-ext build -a dist --overwrite-dest",
+    "serve": "web-ext run -u vk.com/im -p paranoid --keep-profile-changes",
     "package": ". .env && web-ext sign -a dist --api-key $JWT_ISSUER --api-secret $JWT_TOKEN"
   },
   "devDependencies": {
     "browserify": "^16.5.0",
     "colors": "^1.4.0",
+    "istanbul": "^0.4.5",
     "jasmine": "^3.5.0",
     "jsdom": "^16.2.2",
     "prettier": "^2.0.5",
