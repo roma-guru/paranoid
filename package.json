@@ -11,7 +11,7 @@
     "jshashes": "^1.0.8"
   },
   "scripts": {
-    "test": "istanbul test jasmine -- --random=true --seed=1 --config=tests/jasmine.json",
+    "test": "istanbul cover jasmine -- --random=true --seed=1 --config=tests/jasmine.json",
     "func-test": "source tests/.env && node tests/func_test.js",
     "build": "browserify main.js -o build/bundle.js && web-ext build -a dist --overwrite-dest",
     "serve": "web-ext run -u vk.com/im -p paranoid --keep-profile-changes",

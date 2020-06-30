@@ -1,5 +1,11 @@
 const keys = require('../keys.js');
 
+describe("util funcs", () => {
+  it("fingerprints", () => {
+    expect(keys.fingerprint("test")).toBe(448);
+  });
+})
+
 describe("keys storage", () => {
   let pub_key = 'PUBLIC KEY';
   let priv_key = 'PRIVATE KEY';

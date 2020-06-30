@@ -17,7 +17,6 @@ function init() {
     console.info(my_id, interloc_id);
 
     if (!keys.get_public(my_id) && confirm("keys not found, generate?")) {
-      // TODO: use vk natime MessageBox
       console.warn("copy your new public key!");
       const pub_key = crypto.genMyKeys(my_id);
       alert(pub_key); console.info(pub_key);

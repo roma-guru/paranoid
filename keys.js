@@ -4,11 +4,20 @@ function check_key(user_id, key) {
   if (!key) console.error("empty key for", user_id);
 }
 
+function fingerprint(key) {
+  let res = 0;
+  for (let c of key) {
+    res += c.charCodeAt(0);
+  }
+  return res % 100000;
+}
+
 function get_public(user_id) {
   const key = `${prefix}:public:${user_id}`;
   const res = localStorage.getItem(key);
   check_key(user_id, res);
-  console.debug(user_id, '\n', res);
+  console.info(`key fingerprint for ${user_id} is ${fingerprint(res)}`);
+  console.debug(res);
   return res;
 }
 
@@ -23,7 +32,7 @@ function get_private(user_id, password) {
 function set_public(user_id, value) {
   const key = `${prefix}:public:${user_id}`;
   console.info(`set key ${key}`);
-  localStorage.setItem(key, value);
+  localStorage.setItem(key, value.trim());
 }
 
 function set_private(user_id, value, password) {
@@ -34,5 +43,6 @@ function set_private(user_id, value, password) {
 
 module.exports = {
   get_public, get_private,
-  set_public, set_private
+  set_public, set_private,
+  fingerprint
 }
