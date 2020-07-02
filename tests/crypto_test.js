@@ -8,9 +8,7 @@ describe("encryption/decryption", () => {
     let [ enc1, enc2 ] = crypto.encryptMyMessage(msg);
     console.debug(enc1);
     expect(enc1).not.toBeNull();
-    expect(enc1[enc1.length-1]).toBe('=');
     expect(enc2).not.toBeNull();
-    expect(enc2[enc2.length-1]).toBe('=');
 
     let dec = crypto.decryptInterlocMessage(enc2);
     expect(dec).toBe(msg);

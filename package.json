@@ -8,7 +8,8 @@
   "license": "MIT",
   "dependencies": {
     "jsencrypt": "^3.0.0-rc.1",
-    "jshashes": "^1.0.8"
+    "jshashes": "^1.0.8",
+    "simple-aes-256": "^3.0.1"
   },
   "scripts": {
     "test": "istanbul cover jasmine -- --random=true --seed=1 --config=tests/jasmine.json",
