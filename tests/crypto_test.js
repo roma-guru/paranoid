@@ -6,10 +6,8 @@ describe("encryption/decryption", () => {
   it("encrypts/decrypts my message", () => {
     // enc1 - encrypted with interloc key, enc2 - with mine
     let [ enc1, enc2 ] = crypto.encryptMyMessage(msg);
-    console.debug(enc1);
     expect(enc1).not.toBeNull();
     expect(enc2).not.toBeNull();
-
     let dec = crypto.decryptInterlocMessage(enc2);
     expect(dec).toBe(msg);
   });
@@ -22,26 +20,37 @@ describe("signing/verification", () => {
   it("signs/verifies my message", () => {
     let sign = crypto.signMyMessage(msg);
     expect(sign).not.toBeNull();
-    expect(sign[sign.length-1]).toBe('=');
-
     expect(crypto.verifyMyMessage(msg, sign)).toBeTrue();
   });
 });
 
-describe("keys updates", () => {
-  let pub_key = 'PUBLIC KEY';
-  let priv_key = 'PRIVATE KEY';
+describe("keys manipulation", () => {
+  let priv_key = `
+-----BEGIN RSA PRIVATE KEY-----
+MIIBOQIBAAJBALqFdGYLcFVmi6CjVOY58WwOHhQg9JZwa9YbzHmN6u8Gpbls8+i4
+0bS1iHc72EjdNoZHP0kbtpooifzFpOhJ67kCAwEAAQJACWLh4qi8tG9+o0zU3ukX
+jxp+xQCLjm6F3rZzacKMig6zgg4z7uWW2w1rYvO3heulUohEqRdhxQvEvs1/APDT
+SQIhAO29aBBSmjHLS+fXuFSGQUCPRRXnkKAM24e2Xp7D9EirAiEAyNj0vo12g0v4
+4pLaalP7zl0JXZfgQEehokn0UAFDJSsCIHhN/Lcl1bmU8thjpXfAaIzO81reT6Vu
+XDkU5FTbPGb5AiBSf0LwLhz6yy7cqeNK/1oTpoVdSy/SV1nd1jCi2BHjZwIgB1LD
+pNI5ITnX+EDJAXM4vJZldY7Og15i9o1jFdcnd8c=
+-----END RSA PRIVATE KEY-----`.trim()
+  let pub_key = `
+-----BEGIN PUBLIC KEY-----
+MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBALqFdGYLcFVmi6CjVOY58WwOHhQg9JZw
+a9YbzHmN6u8Gpbls8+i40bS1iHc72EjdNoZHP0kbtpooifzFpOhJ67kCAwEAAQ==
+-----END PUBLIC KEY-----`.trim()
 
-  it("saves keys for user_id", () => {
-    crypto.saveKey("someuser", pub_key);
-    crypto.saveKey("someuser", priv_key);
-    expect(crypto.checkKey("someuser")).toBeTruthy();
-    expect(crypto.checkBothKeys("someuser")).toBeTruthy();
-  });
+  it("update my keys", () => {
+    crypto.setMyKeys(priv_key, pub_key);
+    let [ res1, res2 ] = crypto.getMyKeys();
+    expect(res1).toBe(priv_key);
+    expect(res2).toBe(pub_key);
+  })
 
-  it("generates and saves keys", () => {
-    crypto.genMyKeys("my_id");
-    expect(localStorage["paranoid:private:my_id"]).toBeTruthy();
-    expect(localStorage["paranoid:public:my_id"]).toBeTruthy();
-  });
-});
+  it("update interloc keys", () => {
+    crypto.setInterlocKey(pub_key);
+    let res = crypto.getInterlocKey();
+    expect(res).toBe(pub_key);
+  })
+})

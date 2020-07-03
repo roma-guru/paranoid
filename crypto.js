@@ -8,46 +8,25 @@ const myself = new jsencrypt.JSEncrypt({default_key_size:512});
 const interloc = new jsencrypt.JSEncrypt();
 const MD5 = new jshashes.MD5();
 
-// TODO: move to keys.js
-// Save priv/pub key for user_id to storage 
-function saveKey(user_id, key_val) {
-  const isPrivate = key_val.indexOf("PRIVATE KEY") >- 1;
-  const type = isPrivate? "private":"public";
-  console.info(`importing ${type} for ${user_id}`);
-
-  if (isPrivate) {
-    keys.set_private(user_id, key_val, "passwprd");
-  } else {
-    keys.set_public(user_id, key_val);
-  }
-}
-
-// Check user's pub key exists
-function checkKey(user_id) {
-  return keys.get_public(user_id);
-}
-
-// Check both priv/pub keys exists for user_id
-function checkBothKeys(user_id) {
-  return keys.get_public(user_id) && keys.get_private(user_id);
-}
-
 // Generate and save keys for me, returns only pub!
-function genMyKeys(my_id) {
-  keys.set_public(my_id, myself.getPublicKey());
-  keys.set_private(my_id, myself.getPrivateKey(), 'passwd');
-  return myself.getPublicKey();
+function getMyKeys() {
+  return [myself.getPrivateKey(), myself.getPublicKey()];
 }
 
-// Update my keys from storage
-function reloadMyKeys(my_id) {
-    myself.setPublicKey(keys.get_public(my_id));
-    myself.setPrivateKey(keys.get_private(my_id, 'passwd'));
+// Update my keys
+function setMyKeys(priv_key, pub_key) {
+  myself.setPublicKey(pub_key);
+  myself.setPrivateKey(priv_key);
 }
 
-// Update his/her keys from storage
-function reloadInterlocKeys(interloc_id) {
-  interloc.setPublicKey(keys.get_public(interloc_id));
+// Update zer keys
+function setInterlocKey(pub_key) {
+  interloc.setPublicKey(pub_key);
+}
+
+// Return their key
+function getInterlocKey() {
+  return interloc.getPublicKey();
 }
 
 // Encrypt my message with his/her pub key 
@@ -79,7 +58,7 @@ function verifyInterlocSignature(raw_text, signature) {
 
 module.exports = {
   encryptMyMessage, signMyMessage, verifyMyMessage,
-  reloadInterlocKeys, reloadMyKeys, genMyKeys,
   decryptInterlocMessage, verifyInterlocSignature,
-  saveKey, checkKey, checkBothKeys,
+  setMyKeys, setInterlocKey,
+  getMyKeys, getInterlocKey,
 };
