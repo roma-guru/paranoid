@@ -1,6 +1,16 @@
+/* Module injects extension UI into vk
+ * TODO: write similar for fb */
+
 const utils = require('./utils.js');
 const crypto = require('./crypto.js');
+const keys = require('./keys.js');
 
+// Check that url correspondes to private chat
+function checkChatUrl() {
+  return location.pathname.match(/im/) && location.search.match(/sel/);
+}
+
+// Inject inputbox for entering messages to be encrypted
 function injectInput() {
   // already done
   if (document.querySelector('.paranoid-input')) {
@@ -14,7 +24,7 @@ function injectInput() {
   panel.style = "display: none";
   new_inputbox.className = "paranoid-input";
   new_inputbox.style = "width:100%;font-size:13pt;color:white;background-color:#4a76a8";
-  new_inputbox.maxLength = 50;
+  new_inputbox.maxLength = 140;
   new_inputbox.placeholder = "Type here, hit ⏎ to send";
   panel.parentElement.appendChild(new_inputbox);
 
@@ -26,11 +36,14 @@ function injectInput() {
     if (e.code != "Enter") return;
     const [my_id, interloc_id] = getInterlocs();
     const raw_text = new_inputbox.value;
-    if (!crypto.checkBothKeys(my_id)) {
-      alert("can't encrypt - missing some of your keys"); return;
+    if (!keys.get_private(my_id)) {
+      alert("can't encrypt - missing your privkey"); return;
     }
-    if (!crypto.checkKey(interloc_id)) {
-      alert("can't encrypt - missing your dude's pubkey"); return;
+    if (!keys.get_public(my_id)) {
+      alert("can't encrypt - missing your pubkey"); return;
+    }
+    if (!keys.get_public(interloc_id)) {
+      alert("can't encrypt - missing your companion's pubkey"); return;
     }
     if (raw_text) {
       let [encrypted1, encrypted2] = crypto.encryptMyMessage(raw_text);
@@ -45,6 +58,7 @@ function injectInput() {
   }
 }
 
+// Inject menu for importing keys
 function injectMenu(my_id, interloc_id) {
   // drop old one, with old keys
   const old_menu = document.querySelector('.paranoid-menu');
@@ -68,24 +82,27 @@ function injectMenu(my_id, interloc_id) {
   menu.innerHTML += new_html;
 
   menu.querySelector('#load-my-keys').onchange = (e) => {
+    let passwd = prompt("enter your priv key password");
     for (file of e.target.files)
       file.text().then(key_val=>{
-        crypto.saveKey(my_id, key_val);
-        crypto.reloadMyKeys(my_id);
+        utils.saveKey(my_id, key_val);
+        crypto.setMyKeys(keys.get_public(my_id), keys.get_private(my_id, passwd));
       }).catch(err=>console.error(err));
   }
   menu.querySelector('#load-companion-keys').onchange = (e) => {
     for (file of e.target.files)
       file.text().then(key_val=>{
-        crypto.saveKey(interloc_id, key_val);
-        crypto.reloadInterlocKeys(interloc_id);
+        utils.saveKey(interloc_id, key_val);
+        crypto.setInterlocKey(keys.get_public(interloc_id));
       }).catch(err=>console.error(err));
   }
 
 }
 
+// Inject logic for viewing encrypted messages in chat history on mouseover
 function injectMessagesViewer() {
   var message_hist = document.querySelector(".im-page-chat-contain");
+  // FIXME: sloppy bug with undefined messages
   var old_message_content = new Map();
 
   message_hist.onmouseover = (e) => {
@@ -130,13 +147,14 @@ function injectMessagesViewer() {
   }
 }
 
+// Determine interlocutors using profile pic
 function getInterlocs() {
-  // Determine interlocutors using picture links in UI
   const my_id = document.querySelector('a.top_profile_link').attributes['href'].value.substr(1);
   const interloc_id = document.querySelector('.im-page--aside-photo a').attributes.href.value.substr(1);
   return [my_id, interloc_id];
 }
 
+// Determine message author using profile pic
 function getMsgAuthor(msgid) {
   msgid = String(msgid);
   const msg_elem = document.querySelector(`.im-mess[data-msgid="${msgid}"]`);
@@ -144,6 +162,7 @@ function getMsgAuthor(msgid) {
   return link_elem.attributes['href'].value.substr(1);
 }
 
+// Temporary function for automated testing
 function test_send(msg) {
   let event=new KeyboardEvent("keydown", {code:"Enter"});
   let input = document.querySelector('.paranoid-input');
@@ -151,6 +170,7 @@ function test_send(msg) {
   input.dispatchEvent(event);
 }
 
+// Temporary function for automated testing
 function test_read() {
   let messages = document.querySelectorAll(".im-mess--text");
   let last_msg = messages[messages.length - 1];
@@ -158,6 +178,7 @@ function test_read() {
 }
 
 module.exports = { 
+  checkChatUrl,
   injectMenu, injectInput,
   injectMessagesViewer, getInterlocs,
   test_read, test_send,

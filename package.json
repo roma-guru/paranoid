@@ -1,6 +1,6 @@
 {
   "name": "paranoid",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "P2P Encryption in social networks",
   "main": "bundle.js",
   "repository": "github.com/roma-guru/paranoid",
@@ -15,7 +15,7 @@
     "test": "istanbul cover jasmine -- --random=true --seed=1 --config=tests/jasmine.json",
     "func-test": "source tests/.env && node tests/func_test.js",
     "build": "browserify main.js -o build/bundle.js && web-ext build -a dist --overwrite-dest",
-    "serve": "web-ext run -u vk.com/im -p paranoid --keep-profile-changes",
+    "start": "web-ext run -u vk.com/im -p paranoid --keep-profile-changes",
     "package": ". .env && web-ext sign -a dist --api-key $JWT_ISSUER --api-secret $JWT_TOKEN"
   },
   "devDependencies": {

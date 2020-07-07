@@ -2,7 +2,7 @@ const keys = require('../keys.js');
 
 describe("util funcs", () => {
   it("fingerprints", () => {
-    expect(keys.fingerprint("test")).toBe(448);
+    expect(keys.fingerprint("test")).toBe(3632233996);
   });
 })
 

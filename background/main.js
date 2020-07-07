@@ -6,6 +6,7 @@ browser.browserAction.onClicked.addListener(() => {
 });
 
 browser.tabs.onUpdated.addListener((tabId, e) => {
+  // TODO: filter events, too many!
   console.debug(`url change in tab ${tabId} to ${e.url}`);
   browser.tabs.sendMessage(tabId, {command:"init"});
 },
